@@ -33,7 +33,7 @@ void place_walls(game_t* game)
   uint8_t j = 0;
   for(uint8_t i = 0; i < (MAP_SIZE * MAP_SIZE); i++) {
     if(map[i] == 1) {
-      game->walls[j].pos = (pos_t)get_2d_pos(i);
+      game->walls[j] = (pos_t)get_2d_pos(i);
       j++;
     }
   }

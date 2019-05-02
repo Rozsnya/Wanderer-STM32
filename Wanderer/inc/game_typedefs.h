@@ -29,10 +29,6 @@ typedef enum {
 
 typedef struct {
     pos_t pos;
-} wall_t;
-
-typedef struct {
-    pos_t pos;
     stats_t stats;
     uint8_t has_key;
 } skeleton_t;
@@ -61,7 +57,7 @@ typedef enum {
 
 typedef struct {
     uint16_t level;
-    wall_t walls[WALL_NUM];
+    pos_t walls[WALL_NUM];
     hero_t hero;
     boss_t boss;
     skeleton_t skeletons[MAX_SKELETONS];

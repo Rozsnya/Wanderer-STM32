@@ -2,8 +2,7 @@
 
 void DMA2D_DrawImage(uint32_t data, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
 	DMA2D_HandleTypeDef hdma2d;
-	uint32_t destination = LCD_FB_START_ADDRESS
-			+ (x + y * BSP_LCD_GetXSize()) * 4;
+	uint32_t destination = LCD_FB_START_ADDRESS	+ (x + y * BSP_LCD_GetXSize()) * 4;
 	hdma2d.Instance = DMA2D;
 
 	hdma2d.Init.Mode = DMA2D_M2M_BLEND;
@@ -23,7 +22,6 @@ void DMA2D_DrawImage(uint32_t data, uint32_t x, uint32_t y, uint32_t width, uint
 	HAL_DMA2D_Init(&hdma2d);
 	HAL_DMA2D_ConfigLayer(&hdma2d, 1);
 	HAL_DMA2D_ConfigLayer(&hdma2d, 0);
-	HAL_DMA2D_BlendingStart(&hdma2d, data, destination, destination, width,
-			height);
+	HAL_DMA2D_BlendingStart(&hdma2d, data, destination, destination, width,	height);
 	HAL_DMA2D_PollForTransfer(&hdma2d, 10);
 }

@@ -66,8 +66,8 @@ uint8_t is_valid_enemy_pos(const game_t* game, const pos_t* pos)
   }
 
   for(uint8_t i = 0; i < WALL_NUM; i++) {
-    if(game->walls[i].pos.x == pos->x &&
-       game->walls[i].pos.y == pos->y) {
+    if(game->walls[i].x == pos->x &&
+       game->walls[i].y == pos->y) {
       return 0;
     }
   }
@@ -92,21 +92,33 @@ void move_skeletons(game_t* game)
     case 0: //up
       if (game->skeletons[i].pos.y > 0) {
         game->skeletons[i].pos.y--;
+        if (!is_valid_enemy_pos(game, &game->skeletons[i].pos)) {
+          game->skeletons[i].pos.y++;
+        }
       }
       break;
     case 1: //right
       if (game->skeletons[i].pos.x < (MAP_SIZE - 1)) {
         game->skeletons[i].pos.x++;
+        if (!is_valid_enemy_pos(game, &game->skeletons[i].pos)) {
+          game->skeletons[i].pos.x--;
+        }
       }
       break;
     case 2: //down
       if (game->skeletons[i].pos.y < (MAP_SIZE - 1)) {
         game->skeletons[i].pos.y++;
+        if (!is_valid_enemy_pos(game, &game->skeletons[i].pos)) {
+          game->skeletons[i].pos.y--;
+        }
       }
       break;
     case 3: //left
       if (game->skeletons[i].pos.x > 0) {
         game->skeletons[i].pos.x--;
+        if (!is_valid_enemy_pos(game, &game->skeletons[i].pos)) {
+          game->skeletons[i].pos.x++;
+        }
       }
       break;
     default:
@@ -118,7 +130,7 @@ void move_skeletons(game_t* game)
 void show_skeletons(game_t* game)
 {
   for(uint8_t i = 0; i < game->num_of_skeletons; i++) {
-    DMA2D_DrawImage(SKELETON_DATA, 105 + (game->skeletons[i].pos.x * 27), 1 + (game->skeletons[i].pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
+    DMA2D_DrawImage((uint32_t)SKELETON_DATA, 105 + (game->skeletons[i].pos.x * 27), 1 + (game->skeletons[i].pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
   }
 }
 
@@ -129,21 +141,33 @@ void move_boss(game_t* game)
   case 0: //up
     if (game->boss.pos.y > 0) {
       game->boss.pos.y--;
+      if (!is_valid_enemy_pos(game, &game->boss.pos)) {
+        game->boss.pos.y++;
+      }
     }
     break;
   case 1: //right
     if (game->boss.pos.x < (MAP_SIZE - 1)) {
       game->boss.pos.x++;
+      if (!is_valid_enemy_pos(game, &game->boss.pos)) {
+        game->boss.pos.x--;
+      }
     }
     break;
   case 2: //down
     if (game->boss.pos.y < (MAP_SIZE - 1)) {
       game->boss.pos.y++;
+      if (!is_valid_enemy_pos(game, &game->boss.pos)) {
+        game->boss.pos.y--;
+      }
     }
     break;
   case 3: //left
     if (game->boss.pos.x > 0) {
       game->boss.pos.x--;
+      if (!is_valid_enemy_pos(game, &game->boss.pos)) {
+        game->boss.pos.x++;
+      }
     }
     break;
   default:
@@ -153,5 +177,5 @@ void move_boss(game_t* game)
 
 void show_boss(game_t* game)
 {
-  DMA2D_DrawImage(BOSS_DATA, 105 + (game->boss.pos.x * 27), 1 + (game->boss.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
+  DMA2D_DrawImage((uint32_t)BOSS_DATA, 105 + (game->boss.pos.x * 27), 1 + (game->boss.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
 }
