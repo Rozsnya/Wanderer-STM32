@@ -2,6 +2,8 @@
 #define ENEMY_H_
 
 #include "utility.h"
+#include "dma2d.h"
+#include "images.h"
 
 void place_enemies(game_t* game);
 

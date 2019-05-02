@@ -61,7 +61,7 @@ pos_t get_random_pos()
 
 uint8_t is_valid_enemy_pos(const game_t* game, const pos_t* pos)
 {
-  if((pos->x + pos->y) < 3) {
+  if((pos->x + pos->y) < 6) {
     return 0;
   }
 
@@ -70,6 +70,16 @@ uint8_t is_valid_enemy_pos(const game_t* game, const pos_t* pos)
        game->walls[i].pos.y == pos->y) {
       return 0;
     }
+  }
+
+  if((pos->x == game->boss.pos.x) && (pos->y == game->boss.pos.y)) {
+    return 0;
+  }
+
+  for(uint8_t i = 0; i < MAX_SKELETONS; i++) {
+    if((pos->x == game->skeletons[i].pos.x) && (pos->y == game->skeletons[i].pos.y)) {
+        return 0;
+      }
   }
   return 1;
 }
@@ -108,7 +118,7 @@ void move_skeletons(game_t* game)
 void show_skeletons(game_t* game)
 {
   for(uint8_t i = 0; i < game->num_of_skeletons; i++) {
-    //implement draw here
+    DMA2D_DrawImage(SKELETON_DATA, 105 + (game->skeletons[i].pos.x * 27), 1 + (game->skeletons[i].pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
   }
 }
 
@@ -143,5 +153,5 @@ void move_boss(game_t* game)
 
 void show_boss(game_t* game)
 {
-  // implement draw here
+  DMA2D_DrawImage(BOSS_DATA, 105 + (game->boss.pos.x * 27), 1 + (game->boss.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
 }

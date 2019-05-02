@@ -58,5 +58,20 @@ void move_hero(game_t* game, hero_direction_t dir)
 
 void show_hero(game_t* game)
 {
-  //implement draw here
+  switch (game->hero.direction) {
+  case HERO_UP:
+    DMA2D_DrawImage(HERO_UP_DATA, 105 + (game->hero.pos.x * 27), 1 + (game->hero.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
+    break;
+  case HERO_RIGHT:
+    DMA2D_DrawImage(HERO_RIGHT_DATA, 105 + (game->hero.pos.x * 27), 1 + (game->hero.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
+    break;
+  case HERO_DOWN:
+    DMA2D_DrawImage(HERO_DOWN_DATA, 105 + (game->hero.pos.x * 27), 1 + (game->hero.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
+    break;
+  case HERO_LEFT:
+    DMA2D_DrawImage(HERO_LEFT_DATA, 105 + (game->hero.pos.x * 27), 1 + (game->hero.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
+    break;
+  default:
+    break;
+  }
 }

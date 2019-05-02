@@ -2,6 +2,8 @@
 #define HERO_H_
 
 #include "utility.h"
+#include "images.h"
+#include "dma2d.h"
 
 void levelup_hero(game_t* game);
 void create_hero(game_t* game);

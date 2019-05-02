@@ -41,6 +41,6 @@ void place_walls(game_t* game)
 
 pos_t get_2d_pos(uint8_t i)
 {
-  return (pos_t) {i / MAP_SIZE, i % MAP_SIZE};
+  return (pos_t) {i % MAP_SIZE, i / MAP_SIZE};
 }
 
