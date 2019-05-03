@@ -10,6 +10,10 @@
 
 volatile uint8_t touch_flag;
 
+uint32_t last_debounce_time = 0;    // the last time the output pin was toggled
+const uint32_t debounce_delay = 150;    // the debounce time in ms (increase if the output flickers)
+
+
 int main(void) {
 
 	HAL_Init();
@@ -49,10 +53,16 @@ void EXTI15_10_IRQHandler()
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    if (GPIO_Pin == TS_INT_PIN) {
-        touch_flag = 1;
-    }
+ {
+	uint32_t current_time = HAL_GetTick();
+	if (current_time < last_debounce_time + debounce_delay) {
+		return;
+	}
+
+	last_debounce_time = current_time;
+	if (GPIO_Pin == TS_INT_PIN) {
+		touch_flag = 1;
+	}
 }
 
 /*
