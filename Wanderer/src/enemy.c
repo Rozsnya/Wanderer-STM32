@@ -87,7 +87,7 @@ void move_skeletons(game_t* game)
 {
   for(uint8_t i = 0; i < game->num_of_skeletons; i++) {
     DMA2D_DrawImage((uint32_t)FLOOR_DATA, 105 + (game->skeletons[i].pos.x * 27), 1 + (game->skeletons[i].pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
-    if(game->skeletons[i].stats.cur_health <= 0){
+    if(game->skeletons[i].stats.cur_health <= 0 || ((game->skeletons[i].pos.x == game->hero.pos.x) && (game->skeletons[i].pos.y == game->hero.pos.y))){
       continue;
     }
     uint8_t random_dir = random(0, 4);
@@ -145,7 +145,7 @@ void move_boss(game_t* game)
 {
   DMA2D_DrawImage((uint32_t)FLOOR_DATA, 105 + (game->boss.pos.x * 27), 1 + (game->boss.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
 
-  if(game->boss.stats.cur_health <= 0) {
+  if(game->boss.stats.cur_health <= 0 || ((game->boss.pos.x == game->hero.pos.x) && (game->boss.pos.y == game->hero.pos.y))) {
     return;
   }
 

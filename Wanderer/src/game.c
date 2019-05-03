@@ -12,6 +12,22 @@ game_t start_game()
   return game;
 }
 
+void check_level(game_t* game)
+{
+  if(game->boss.stats.cur_health <= 0) {
+    game->boss_killed = 1;
+  }
+  for(uint8_t i = 0; i < MAX_SKELETONS; i++) {
+    if(game->skeletons[i].has_key && game->skeletons[i].stats.cur_health <= 0) {
+      game->key_obtained = 1;
+    }
+  }
+
+  if(game->key_obtained && game->boss_killed) {
+    next_level(game);
+  }
+}
+
 void next_level(game_t* game)
 {
   levelup_hero(game);
