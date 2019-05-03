@@ -21,4 +21,8 @@ extern uint32_t ARROW_RIGHT_DATA[];
 extern uint32_t ARROW_DOWN_DATA[];
 extern uint32_t ARROW_LEFT_DATA[];
 
+extern uint32_t SHIELD_DATA[];
+extern uint32_t SWORD_DATA[];
+extern uint32_t HEART_DATA[];
+
 #endif /* IMAGES_H_ */

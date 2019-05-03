@@ -8,6 +8,7 @@
 #include "images.h"
 #include "TS_Control.h"
 #include "border.h"
+#include <stdio.h>
 
 volatile uint8_t touch_flag;
 
@@ -23,7 +24,7 @@ int main(void) {
 	BSP_LCD_Init();
 	BSP_LCD_LayerDefaultInit(1, LCD_FB_START_ADDRESS);
 	BSP_LCD_SelectLayer(1);
-	BSP_LCD_SetFont(&LCD_DEFAULT_FONT);
+	BSP_LCD_SetFont(&Font16);
 	BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
 	BSP_LCD_Clear(LCD_COLOR_WHITE);
 
@@ -33,12 +34,20 @@ int main(void) {
   map_init();
 	init_rng();
 	draw_arrow_keys();
+	draw_icons();
 
 	BSP_LED_Init(LED_GREEN);
-
+  char stat_string[50];
 	game_t game = start_game();
 
 	while (1) {
+	  sprintf(stat_string, "%d/%d", game.hero.stats.cur_health, game.hero.stats.max_health);
+	  BSP_LCD_DisplayStringAt(30, 10, (uint8_t*)stat_string, LEFT_MODE);
+	  sprintf(stat_string, "%d", game.hero.stats.attack);
+	  BSP_LCD_DisplayStringAt(30, 37, (uint8_t*)stat_string, LEFT_MODE);
+	  sprintf(stat_string, "%d", game.hero.stats.defence);
+	  BSP_LCD_DisplayStringAt(30, 64, (uint8_t*)stat_string, LEFT_MODE);
+
 	  if(touch_flag) {
 	    process_touch(&game);
 	    touch_flag = 0;
