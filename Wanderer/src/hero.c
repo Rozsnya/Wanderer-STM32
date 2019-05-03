@@ -29,8 +29,38 @@ void create_hero(game_t* game)
   game->hero = hero;
 }
 
+uint8_t is_valid_move(const game_t* game, hero_direction_t dir)
+{
+  pos_t temp;
+  switch(dir) {
+  case HERO_UP:
+    temp = (pos_t ) { game->hero.pos.x, game->hero.pos.y - 1 };
+    break;
+  case HERO_RIGHT:
+    temp = (pos_t ) { game->hero.pos.x + 1, game->hero.pos.y };
+    break;
+  case HERO_DOWN:
+    temp = (pos_t ) { game->hero.pos.x, game->hero.pos.y + 1 };
+    break;
+  case HERO_LEFT:
+    temp = (pos_t ) { game->hero.pos.x - 1, game->hero.pos.y };
+    break;
+  }
+  for(uint8_t i = 0; i < WALL_NUM; i++) {
+      if(game->walls[i].x == temp.x &&
+         game->walls[i].y == temp.y) {
+        return 0;
+      }
+    }
+  return 1;
+}
+
 void move_hero(game_t* game, hero_direction_t dir)
 {
+  if(!is_valid_move(game, dir)) {
+    return;
+  }
+  DMA2D_DrawImage((uint32_t)FLOOR_DATA, 105 + (game->hero.pos.x * 27), 1 + (game->hero.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
   switch(dir) {
   case HERO_UP:
     if(game->hero.pos.y > 0) {

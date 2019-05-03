@@ -4,6 +4,7 @@
 #include "utility.h"
 #include "images.h"
 #include "dma2d.h"
+#include "map.h"
 
 void levelup_hero(game_t* game);
 void create_hero(game_t* game);

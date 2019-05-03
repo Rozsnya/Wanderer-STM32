@@ -8,12 +8,12 @@
 #define TEXTURE_SIZE 27
 
 extern uint32_t HERO_UP_DATA[];
-extern uint32_t HERO_RIGHT_DATA[DATA_SIZE];
-extern uint32_t HERO_DOWN_DATA[DATA_SIZE];
-extern uint32_t HERO_LEFT_DATA[DATA_SIZE];
+extern uint32_t HERO_RIGHT_DATA[];
+extern uint32_t HERO_DOWN_DATA[];
+extern uint32_t HERO_LEFT_DATA[];
 
-extern uint32_t BOSS_DATA[DATA_SIZE];
+extern uint32_t BOSS_DATA[];
 
-extern uint32_t SKELETON_DATA[DATA_SIZE];
+extern uint32_t SKELETON_DATA[];
 
 #endif /* IMAGES_H_ */

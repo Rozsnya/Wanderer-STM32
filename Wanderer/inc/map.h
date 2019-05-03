@@ -4,6 +4,7 @@
 #include "stm32746g_discovery_ts.h"
 #include "stm32746g_discovery_lcd.h"
 
+extern uint32_t FLOOR_DATA[];
 
 void map_init();
 
