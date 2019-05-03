@@ -12,15 +12,21 @@
 #include <stdio.h>
 
 volatile uint8_t touch_flag;
+volatile uint8_t move_flag;
 
 uint32_t last_debounce_time = 0;    // the last time the output pin was toggled
 const uint32_t debounce_delay = 300;    // the debounce time in ms (increase if the output flickers)
+
+TIM_HandleTypeDef EnemyMoveTimer;
+
+void init_timer();
 
 int main(void)
 {
 
   HAL_Init();
   SystemClock_Config();
+  init_timer();
 
   BSP_LCD_Init();
   BSP_LCD_LayerDefaultInit(1, LCD_FB_START_ADDRESS);
@@ -74,9 +80,44 @@ int main(void)
       process_touch(&game);
       touch_flag = 0;
     }
+    if(move_flag) {
+      move_boss(&game);
+      move_skeletons(&game);
+      move_flag = 0;
+    }
     show_hero(&game);
     show_boss(&game);
     show_skeletons(&game);
+  }
+}
+
+void init_timer()
+{
+  __HAL_RCC_TIM2_CLK_ENABLE();
+  EnemyMoveTimer.Instance = TIM2;
+  EnemyMoveTimer.Init.Prescaler = 10800 - 1;
+  EnemyMoveTimer.Init.Period = 20000 - 1;
+  EnemyMoveTimer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  EnemyMoveTimer.Init.CounterMode = TIM_COUNTERMODE_UP;
+
+  HAL_TIM_Base_Init(&EnemyMoveTimer);
+
+  HAL_NVIC_SetPriority(TIM2_IRQn, 4, 0);
+  HAL_NVIC_EnableIRQ(TIM2_IRQn);
+
+  HAL_TIM_Base_Start_IT(&EnemyMoveTimer);
+}
+
+void TIM2_IRQHandler()
+{
+  HAL_TIM_IRQHandler(&EnemyMoveTimer);
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim->Instance == TIM2){
+    move_flag = 1;
+    BSP_LED_Toggle(LED_GREEN);
   }
 }
 

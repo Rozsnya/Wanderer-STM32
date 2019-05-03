@@ -12,4 +12,6 @@ void next_level(game_t* game);
 pos_t get_2d_pos(uint8_t i);
 void place_walls(game_t* game);
 
+void check_level(game_t* game);
+
 #endif /* GAME_H_ */
