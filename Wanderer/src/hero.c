@@ -57,10 +57,10 @@ uint8_t is_valid_move(const game_t* game, hero_direction_t dir)
 
 void move_hero(game_t* game, hero_direction_t dir)
 {
-  if(!is_valid_move(game, dir)) {
+  DMA2D_DrawImage((uint32_t)FLOOR_DATA, 105 + (game->hero.pos.x * 27), 1 + (game->hero.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
+  if(!is_valid_move(game, dir) || game->hero.stats.cur_health <= 0) {
     return;
   }
-  DMA2D_DrawImage((uint32_t)FLOOR_DATA, 105 + (game->hero.pos.x * 27), 1 + (game->hero.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
   switch(dir) {
   case HERO_UP:
     if(game->hero.pos.y > 0) {
@@ -105,5 +105,49 @@ void show_hero(game_t* game)
     break;
   default:
     break;
+  }
+}
+
+int8_t is_on_enemy(game_t* game)
+{
+  for (uint8_t i = 0; i < (MAX_SKELETONS + 1); i++) {
+    if ((game->hero.pos.x == game->enemy_positions[i].x) && (game->hero.pos.y == game->enemy_positions[i].y)) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+void hero_battle(game_t* game)
+{
+  int8_t enemy = is_on_enemy(game);
+  if(enemy == -1) {
+    return;
+  }
+
+  uint16_t hero_attack = game->hero.stats.attack + (2 * throwD6());
+
+  if(enemy == 0) { //boss
+    int16_t damage = (hero_attack - game->boss.stats.defence);
+    if(damage > 0) {
+      game->boss.stats.cur_health -= damage;
+    }
+    if (game->boss.stats.cur_health > 0) {
+      int16_t boss_damage = (game->boss.stats.attack + (2 * throwD6()));
+      if (boss_damage > 0) {
+        game->hero.stats.cur_health -= boss_damage;
+      }
+    }
+  } else { //skeletons
+    int16_t damage = (hero_attack - game->skeletons[enemy - 1].stats.defence);
+    if(damage > 0) {
+      game->skeletons[enemy - 1].stats.cur_health -= damage;
+    }
+    if (game->skeletons[enemy - 1].stats.cur_health > 0) {
+      int16_t skeleton_damage = (game->skeletons[enemy - 1].stats.attack + (2 * throwD6()));
+      if (skeleton_damage > 0) {
+        game->hero.stats.cur_health -= skeleton_damage;
+      }
+    }
   }
 }

@@ -27,6 +27,7 @@ void place_skeleton(game_t* game, uint8_t is_keyholder)
         pos = get_random_pos();
     } while(!is_valid_enemy_pos(game, &pos));
 
+    game->enemy_positions[game->num_of_skeletons+1] = pos;
     game->skeletons[game->num_of_skeletons] = create_skeleton(game->level, &pos, is_keyholder);
     game->num_of_skeletons++;
 }
@@ -47,6 +48,7 @@ void place_boss(game_t* game)
         pos = get_random_pos();
     } while (!is_valid_enemy_pos(game, &pos));
 
+    game->enemy_positions[0] = pos;
     game->boss = create_boss(game->level, &pos);
 }
 
@@ -61,7 +63,7 @@ pos_t get_random_pos()
 
 uint8_t is_valid_enemy_pos(const game_t* game, const pos_t* pos)
 {
-  if((pos->x + pos->y) < 6) {
+  if((pos->x + pos->y) < 4) {
     return 0;
   }
 
@@ -72,21 +74,22 @@ uint8_t is_valid_enemy_pos(const game_t* game, const pos_t* pos)
     }
   }
 
-  if((pos->x == game->boss.pos.x) && (pos->y == game->boss.pos.y)) {
-    return 0;
+  for(uint8_t i = 0; i < (MAX_SKELETONS + 1); i++) {
+    if((pos->x == game->enemy_positions[i].x) && (pos->y == game->enemy_positions[i].y)) {
+      return 0;
+    }
   }
 
-  for(uint8_t i = 0; i < MAX_SKELETONS; i++) {
-    if((pos->x == game->skeletons[i].pos.x) && (pos->y == game->skeletons[i].pos.y)) {
-        return 0;
-      }
-  }
   return 1;
 }
 
 void move_skeletons(game_t* game)
 {
   for(uint8_t i = 0; i < game->num_of_skeletons; i++) {
+    DMA2D_DrawImage((uint32_t)FLOOR_DATA, 105 + (game->skeletons[i].pos.x * 27), 1 + (game->skeletons[i].pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
+    if(game->skeletons[i].stats.cur_health <= 0){
+      continue;
+    }
     uint8_t random_dir = random(0, 4);
     switch(random_dir) {
     case 0: //up
@@ -124,18 +127,28 @@ void move_skeletons(game_t* game)
     default:
       break;
     }
+    game->enemy_positions[i+1] = game->skeletons[i].pos;
   }
 }
 
 void show_skeletons(game_t* game)
 {
   for(uint8_t i = 0; i < game->num_of_skeletons; i++) {
+    if (game->skeletons[i].stats.cur_health <= 0) {
+      continue;
+    }
     DMA2D_DrawImage((uint32_t)SKELETON_DATA, 105 + (game->skeletons[i].pos.x * 27), 1 + (game->skeletons[i].pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
   }
 }
 
 void move_boss(game_t* game)
 {
+  DMA2D_DrawImage((uint32_t)FLOOR_DATA, 105 + (game->boss.pos.x * 27), 1 + (game->boss.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
+
+  if(game->boss.stats.cur_health <= 0) {
+    return;
+  }
+
   uint8_t random_dir = random(0, 4);
   switch (random_dir) {
   case 0: //up
@@ -173,9 +186,13 @@ void move_boss(game_t* game)
   default:
     break;
   }
+  game->enemy_positions[0] = game->boss.pos;
 }
 
 void show_boss(game_t* game)
 {
+  if (game->boss.stats.cur_health <= 0) {
+    return;
+  }
   DMA2D_DrawImage((uint32_t)BOSS_DATA, 105 + (game->boss.pos.x * 27), 1 + (game->boss.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
 }

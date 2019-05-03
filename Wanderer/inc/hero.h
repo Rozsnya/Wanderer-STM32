@@ -10,4 +10,6 @@ void levelup_hero(game_t* game);
 void create_hero(game_t* game);
 void move_hero(game_t* game, hero_direction_t dir);
 void show_hero(game_t* game);
+void hero_battle(game_t* game);
+int8_t is_on_enemy(game_t* game);
 #endif /* HERO_H_ */

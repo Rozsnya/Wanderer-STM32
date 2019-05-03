@@ -4,6 +4,7 @@
 #include "utility.h"
 #include "dma2d.h"
 #include "images.h"
+#include "map.h"
 
 void place_enemies(game_t* game);
 
@@ -18,6 +19,7 @@ void show_boss(game_t* game);
 pos_t get_random_pos();
 uint8_t is_valid_enemy_pos(const game_t* game, const pos_t* pos);
 
-void move_enemies(game_t* game);
+void move_boss(game_t* game);
+void move_skeletons(game_t* game);
 
 #endif /* ENEMY_H_ */

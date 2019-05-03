@@ -5,6 +5,7 @@ game_t start_game()
 {
   game_t game;
   memset(&game, 0, sizeof(game));
+  game.level = 1;
   create_hero(&game);
   place_walls(&game);
   place_enemies(&game);
@@ -43,4 +44,3 @@ pos_t get_2d_pos(uint8_t i)
 {
   return (pos_t) {i % MAP_SIZE, i / MAP_SIZE};
 }
-

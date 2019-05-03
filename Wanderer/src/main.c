@@ -3,6 +3,7 @@
 #include "stm32746g_discovery_lcd.h"
 #include "utility.h"
 #include "game.h"
+#include "enemy.h"
 #include "map.h"
 #include "dma2d.h"
 #include "images.h"
@@ -52,9 +53,14 @@ int main(void) {
 	    process_touch(&game);
 	    touch_flag = 0;
 	  }
+    move_boss(&game);
+    move_skeletons(&game);
+
 	  show_hero(&game);
 	  show_boss(&game);
 	  show_skeletons(&game);
+
+	  HAL_Delay(500);
 	}
 }
 

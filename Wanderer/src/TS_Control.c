@@ -18,6 +18,6 @@ void process_touch(game_t* game)
       move_hero(game, HERO_RIGHT);
     }
   } else if (touch.touchX[0] > 100 && touch.touchX[0] < (BSP_LCD_GetXSize() - 100)) {
-    //STRIKE THE MONKAS
+    hero_battle(game);
   }
 }

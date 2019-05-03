@@ -13,9 +13,8 @@ typedef struct {
 } pos_t; //tile pos, not pixel pos
 
 typedef struct {
-    uint8_t is_alive;
     uint16_t max_health;
-    uint16_t cur_health;
+    int16_t cur_health;
     uint16_t attack;
     uint16_t defence;
 } stats_t;
@@ -58,6 +57,7 @@ typedef enum {
 typedef struct {
     uint16_t level;
     pos_t walls[WALL_NUM];
+    pos_t enemy_positions[1 + MAX_SKELETONS]; //boss + skeletons
     hero_t hero;
     boss_t boss;
     skeleton_t skeletons[MAX_SKELETONS];
