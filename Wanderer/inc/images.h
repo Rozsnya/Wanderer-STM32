@@ -16,4 +16,9 @@ extern uint32_t BOSS_DATA[];
 
 extern uint32_t SKELETON_DATA[];
 
+extern uint32_t ARROW_UP_DATA[];
+extern uint32_t ARROW_RIGHT_DATA[];
+extern uint32_t ARROW_DOWN_DATA[];
+extern uint32_t ARROW_LEFT_DATA[];
+
 #endif /* IMAGES_H_ */

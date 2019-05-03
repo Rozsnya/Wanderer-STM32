@@ -7,11 +7,12 @@
 #include "dma2d.h"
 #include "images.h"
 #include "TS_Control.h"
+#include "border.h"
 
 volatile uint8_t touch_flag;
 
 uint32_t last_debounce_time = 0;    // the last time the output pin was toggled
-const uint32_t debounce_delay = 150;    // the debounce time in ms (increase if the output flickers)
+const uint32_t debounce_delay = 300;    // the debounce time in ms (increase if the output flickers)
 
 
 int main(void) {
@@ -31,6 +32,7 @@ int main(void) {
 
   map_init();
 	init_rng();
+	draw_arrow_keys();
 
 	BSP_LED_Init(LED_GREEN);
 
