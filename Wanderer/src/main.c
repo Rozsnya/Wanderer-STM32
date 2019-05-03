@@ -16,70 +16,86 @@ volatile uint8_t touch_flag;
 uint32_t last_debounce_time = 0;    // the last time the output pin was toggled
 const uint32_t debounce_delay = 300;    // the debounce time in ms (increase if the output flickers)
 
+int main(void)
+{
 
-int main(void) {
+  HAL_Init();
+  SystemClock_Config();
 
-	HAL_Init();
-	SystemClock_Config();
+  BSP_LCD_Init();
+  BSP_LCD_LayerDefaultInit(1, LCD_FB_START_ADDRESS);
+  BSP_LCD_SelectLayer(1);
+  BSP_LCD_SetFont(&Font16);
+  BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
 
-	BSP_LCD_Init();
-	BSP_LCD_LayerDefaultInit(1, LCD_FB_START_ADDRESS);
-	BSP_LCD_SelectLayer(1);
-	BSP_LCD_SetFont(&Font16);
-	BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
-	BSP_LCD_Clear(LCD_COLOR_WHITE);
-
-	BSP_TS_Init(480, 272);
-	BSP_TS_ITConfig();
+  BSP_TS_Init(480, 272);
+  BSP_TS_ITConfig();
 
   map_init();
-	init_rng();
-	draw_arrow_keys();
-	draw_icons();
+  init_rng();
+  draw_arrow_keys();
+  draw_icons();
 
-	BSP_LED_Init(LED_GREEN);
+  BSP_LED_Init(LED_GREEN);
   char stat_string[50];
-	game_t game = start_game();
+  game_t game = start_game();
 
-	while (1) {
-	  sprintf(stat_string, "%d/%d", game.hero.stats.cur_health, game.hero.stats.max_health);
-	  BSP_LCD_DisplayStringAt(30, 10, (uint8_t*)stat_string, LEFT_MODE);
-	  sprintf(stat_string, "%d", game.hero.stats.attack);
-	  BSP_LCD_DisplayStringAt(30, 37, (uint8_t*)stat_string, LEFT_MODE);
-	  sprintf(stat_string, "%d", game.hero.stats.defence);
-	  BSP_LCD_DisplayStringAt(30, 64, (uint8_t*)stat_string, LEFT_MODE);
+  while (1) {
+    sprintf(stat_string, "%d/%d", game.hero.stats.cur_health, game.hero.stats.max_health);
+    BSP_LCD_DisplayStringAt(30, 10, (uint8_t*) stat_string, LEFT_MODE);
+    sprintf(stat_string, "%d", game.hero.stats.attack);
+    BSP_LCD_DisplayStringAt(30, 37, (uint8_t*) stat_string, LEFT_MODE);
+    sprintf(stat_string, "%d", game.hero.stats.defence);
+    BSP_LCD_DisplayStringAt(30, 64, (uint8_t*) stat_string, LEFT_MODE);
+    int hero_standing_on_enemy = is_on_enemy(&game);
+    if (hero_standing_on_enemy == -1 || (game.boss.stats.cur_health < 1 && hero_standing_on_enemy == 0) ||
+        (game.skeletons[hero_standing_on_enemy - 1].stats.cur_health < 1 && hero_standing_on_enemy > 0)) {
+      BSP_LCD_DisplayStringAt(30, 10, (uint8_t*) "      ", RIGHT_MODE);
+      BSP_LCD_DisplayStringAt(30, 37, (uint8_t*) "      ", RIGHT_MODE);
+      BSP_LCD_DisplayStringAt(30, 64, (uint8_t*) "      ", RIGHT_MODE);
+    } else if (hero_standing_on_enemy == 0) {
+      sprintf(stat_string, "%d/%d", game.boss.stats.cur_health, game.boss.stats.max_health);
+      BSP_LCD_DisplayStringAt(30, 10, (uint8_t*) stat_string, RIGHT_MODE);
+      sprintf(stat_string, "%d", game.boss.stats.attack);
+      BSP_LCD_DisplayStringAt(30, 37, (uint8_t*) stat_string, RIGHT_MODE);
+      sprintf(stat_string, "%d", game.boss.stats.defence);
+      BSP_LCD_DisplayStringAt(30, 64, (uint8_t*) stat_string, RIGHT_MODE);
+    } else if (hero_standing_on_enemy != -1) {
+      sprintf(stat_string, "%d/%d", game.skeletons[hero_standing_on_enemy - 1].stats.cur_health, game.skeletons[hero_standing_on_enemy - 1].stats.max_health);
+      BSP_LCD_DisplayStringAt(30, 10, (uint8_t*) stat_string, RIGHT_MODE);
+      sprintf(stat_string, "%d", game.skeletons[hero_standing_on_enemy - 1].stats.attack);
+      BSP_LCD_DisplayStringAt(30, 37, (uint8_t*) stat_string, RIGHT_MODE);
+      sprintf(stat_string, "%d", game.skeletons[hero_standing_on_enemy - 1].stats.defence);
+      BSP_LCD_DisplayStringAt(30, 64, (uint8_t*) stat_string, RIGHT_MODE);
+    }
 
-	  if(touch_flag) {
-	    process_touch(&game);
-	    touch_flag = 0;
-	  }
-    move_boss(&game);
-    move_skeletons(&game);
-
-	  show_hero(&game);
-	  show_boss(&game);
-	  show_skeletons(&game);
-
-	  HAL_Delay(500);
-	}
+    if (touch_flag) {
+      process_touch(&game);
+      touch_flag = 0;
+    }
+    show_hero(&game);
+    show_boss(&game);
+    show_skeletons(&game);
+  }
 }
 
 void EXTI15_10_IRQHandler()
 {
-    HAL_GPIO_EXTI_IRQHandler(TS_INT_PIN);
+  HAL_GPIO_EXTI_IRQHandler(TS_INT_PIN);
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
- {
-	uint32_t current_time = HAL_GetTick();
-	if (current_time < last_debounce_time + debounce_delay) {
-		return;
-	}
+{
+  uint32_t current_time = HAL_GetTick();
+  if (current_time < last_debounce_time + debounce_delay) {
+    return;
+  }
 
-	last_debounce_time = current_time;
-	if (GPIO_Pin == TS_INT_PIN) {
-		touch_flag = 1;
-	}
+  last_debounce_time = current_time;
+  if (GPIO_Pin == TS_INT_PIN) {
+    touch_flag = 1;
+  }
 }
 
 /*
