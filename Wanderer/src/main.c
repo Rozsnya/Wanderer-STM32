@@ -45,14 +45,17 @@ int main(void)
 
   BSP_LED_Init(LED_GREEN);
   char stat_string[50];
-  game_t game = start_game();
+  game_t game = start_game(1, get_random_stats(1, HERO_ENTITY));
 
   while (1) {
     sprintf(stat_string, "%d/%d", game.hero.stats.cur_health, game.hero.stats.max_health);
+    BSP_LCD_DisplayStringAt(30, 10, (uint8_t*) "      ", LEFT_MODE);
     BSP_LCD_DisplayStringAt(30, 10, (uint8_t*) stat_string, LEFT_MODE);
     sprintf(stat_string, "%d", game.hero.stats.attack);
+    BSP_LCD_DisplayStringAt(30, 37, (uint8_t*) "      ", LEFT_MODE);
     BSP_LCD_DisplayStringAt(30, 37, (uint8_t*) stat_string, LEFT_MODE);
     sprintf(stat_string, "%d", game.hero.stats.defence);
+    BSP_LCD_DisplayStringAt(30, 64, (uint8_t*) "      ", LEFT_MODE);
     BSP_LCD_DisplayStringAt(30, 64, (uint8_t*) stat_string, LEFT_MODE);
     int hero_standing_on_enemy = is_on_enemy(&game);
     if (hero_standing_on_enemy == -1 || (game.boss.stats.cur_health < 1 && hero_standing_on_enemy == 0) ||
@@ -62,17 +65,23 @@ int main(void)
       BSP_LCD_DisplayStringAt(30, 64, (uint8_t*) "      ", RIGHT_MODE);
     } else if (hero_standing_on_enemy == 0) {
       sprintf(stat_string, "%d/%d", game.boss.stats.cur_health, game.boss.stats.max_health);
+      BSP_LCD_DisplayStringAt(30, 10, (uint8_t*) "      ", RIGHT_MODE);
       BSP_LCD_DisplayStringAt(30, 10, (uint8_t*) stat_string, RIGHT_MODE);
       sprintf(stat_string, "%d", game.boss.stats.attack);
+      BSP_LCD_DisplayStringAt(30, 37, (uint8_t*) "      ", RIGHT_MODE);
       BSP_LCD_DisplayStringAt(30, 37, (uint8_t*) stat_string, RIGHT_MODE);
       sprintf(stat_string, "%d", game.boss.stats.defence);
+      BSP_LCD_DisplayStringAt(30, 64, (uint8_t*) "      ", RIGHT_MODE);
       BSP_LCD_DisplayStringAt(30, 64, (uint8_t*) stat_string, RIGHT_MODE);
     } else if (hero_standing_on_enemy != -1) {
       sprintf(stat_string, "%d/%d", game.skeletons[hero_standing_on_enemy - 1].stats.cur_health, game.skeletons[hero_standing_on_enemy - 1].stats.max_health);
+      BSP_LCD_DisplayStringAt(30, 10, (uint8_t*) "      ", RIGHT_MODE);
       BSP_LCD_DisplayStringAt(30, 10, (uint8_t*) stat_string, RIGHT_MODE);
       sprintf(stat_string, "%d", game.skeletons[hero_standing_on_enemy - 1].stats.attack);
+      BSP_LCD_DisplayStringAt(30, 37, (uint8_t*) "      ", RIGHT_MODE);
       BSP_LCD_DisplayStringAt(30, 37, (uint8_t*) stat_string, RIGHT_MODE);
       sprintf(stat_string, "%d", game.skeletons[hero_standing_on_enemy - 1].stats.defence);
+      BSP_LCD_DisplayStringAt(30, 64, (uint8_t*) "      ", RIGHT_MODE);
       BSP_LCD_DisplayStringAt(30, 64, (uint8_t*) stat_string, RIGHT_MODE);
     }
 
@@ -88,6 +97,10 @@ int main(void)
     show_hero(&game);
     show_boss(&game);
     show_skeletons(&game);
+    if(level_done(&game)) {
+      map_init();
+      game = start_game(game.level+1, game.hero.stats);
+    }
   }
 }
 
@@ -96,7 +109,7 @@ void init_timer()
   __HAL_RCC_TIM2_CLK_ENABLE();
   EnemyMoveTimer.Instance = TIM2;
   EnemyMoveTimer.Init.Prescaler = 10800 - 1;
-  EnemyMoveTimer.Init.Period = 20000 - 1;
+  EnemyMoveTimer.Init.Period = 15000 - 1;
   EnemyMoveTimer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   EnemyMoveTimer.Init.CounterMode = TIM_COUNTERMODE_UP;
 
@@ -117,7 +130,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim->Instance == TIM2){
     move_flag = 1;
-    BSP_LED_Toggle(LED_GREEN);
   }
 }
 

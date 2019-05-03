@@ -2,8 +2,6 @@
 
 void levelup_hero(game_t* game)
 {
-  game->hero.pos = (pos_t ) { 0, 0 };
-
   game->hero.stats.attack += throwD6();
   game->hero.stats.defence += throwD6();
   game->hero.stats.max_health += throwD6();
@@ -18,12 +16,12 @@ void levelup_hero(game_t* game)
   }
 }
 
-void create_hero(game_t* game)
+void create_hero(game_t* game, stats_t hero_stats)
 {
   hero_t hero = {
       .direction = HERO_DOWN,
       .pos = {0,0},
-      .stats = get_random_stats(0, HERO_ENTITY)
+      .stats = hero_stats
   };
 
   game->hero = hero;
@@ -90,6 +88,9 @@ void move_hero(game_t* game, hero_direction_t dir)
 
 void show_hero(game_t* game)
 {
+  if (game->hero.stats.cur_health <= 0) {
+    return;
+  }
   switch (game->hero.direction) {
   case HERO_UP:
     DMA2D_DrawImage((uint32_t)HERO_UP_DATA, 105 + (game->hero.pos.x * 27), 1 + (game->hero.pos.y * 27), TEXTURE_SIZE, TEXTURE_SIZE);
